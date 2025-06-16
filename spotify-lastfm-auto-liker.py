@@ -1,17 +1,18 @@
+import sys
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import pylast
 
 # Enter your Spotify API credentials here
-SPOTIPY_CLIENT_ID = 'your_client_id'
-SPOTIPY_CLIENT_SECRET = 'your_client_secret'
-SPOTIPY_REDIRECT_URI = 'your_redirect_uri'
+SPOTIPY_CLIENT_ID = ''
+SPOTIPY_CLIENT_SECRET = ''
+SPOTIPY_REDIRECT_URI = 'http://127.0.0.1:8888'
 
 # Enter your Last.fm API credentials here
-API_KEY = 'your_api_key'
-API_SECRET = 'your_api_secret'
-username = 'your_username'
-password_hash = pylast.md5('your_password')
+API_KEY = ''
+API_SECRET = ''
+username = ''
+password_hash = pylast.md5('')
 
 # Authenticate with the Spotify API
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
@@ -24,7 +25,8 @@ network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET,
                                username=username, password_hash=password_hash)
 
 # Get the first batch of 50 saved tracks from Spotify
-offset = 0
+offset = int(sys.argv[1]) or 0
+print("Starting at "+str(offset))
 results = sp.current_user_saved_tracks(limit=50, offset=offset)
 
 # Loop through the saved tracks and like each track on Last.fm
@@ -43,6 +45,7 @@ while results['items']:
     # Check if there are more tracks to retrieve
     if results['next']:
         offset += 50
+        print("===> Offset is now "+str(offset))
         results = sp.current_user_saved_tracks(limit=50, offset=offset)
     else:
         break
